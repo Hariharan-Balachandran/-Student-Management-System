@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Teacher Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            margin: 40px auto;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px; /* space between buttons and table */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #6a11cb;
+            color: white;
+        }
+        tr:hover {
+            background: #f1f1f1;
+        }
+        .actions a {
+            margin-right: 10px;
+            padding: 6px 12px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            background: #2575fc;
+        }
+        .actions a.delete {
+            background: #ff4d4d;
+        }
+        .add-btn, .logout-btn {
+            padding: 10px 20px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+        .add-btn {
+            background: #6a11cb;
+        }
+        .logout-btn {
+            background: #ff4d4d;
+        }
+        .pagination {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            padding: 6px 12px;
+            background: #2575fc;
+            color: white;
+            border-radius: 5px;
+        }
+        .pagination a.disabled {
+            background: #ccc;
+            pointer-events: none;
+        }
+        .bottom-logout {
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Teacher Dashboard</h2>
+
+    <!-- Top bar with logout + add buttons -->
+    <div class="top-bar">
+        <a class="logout-btn" th:href="@{/logout}" onclick="return confirm('Are you sure you want to logout?')">Logout</a>
+        <a class="add-btn" th:href="@{/teacher/add}">Add New Student</a>
+    </div>
+    <div th:if="${successMessage}" style="background: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin: 15px 0; text-align: center;">
+        <span th:text="${successMessage}"></span>
+    </div>
+
+
+    <!-- Students table -->
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Register No</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Marks</th>
+            <th>Attendance</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="student : ${students}">
+            <td th:text="${student.id}"></td>
+            <td th:text="${student.registerNumber}"></td>
+            <td th:text="${student.name}"></td>
+            <td th:text="${student.email}"></td>
+            <td th:text="${student.marks}"></td>
+            <td th:text="${student.attendance} + '%'"></td>
+            <td class="actions">
+                <a th:href="@{|/teacher/edit/${student.id}|}">Edit</a>
+                <a th:href="@{|/teacher/delete/${student.id}|}" class="delete">Delete</a>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <a th:if="${currentPage > 0}" th:href="@{|/teacher/dashboard?page=${currentPage - 1}|}">Prev</a>
+        <span>Page [[${currentPage + 1}]] of [[${totalPages}]]</span>
+        <a th:if="${currentPage + 1 < totalPages}" th:href="@{|/teacher/dashboard?page=${currentPage + 1}|}">Next</a>
+    </div>
+</div>
+</body>
+</html>
