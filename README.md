@@ -173,6 +173,20 @@ Use the demo credentials provided above to explore the Teacher and Student dashb
 - Users cannot access dashboards belonging to another role.
 - Sensitive configuration files are excluded using `.gitignore`.
 
+  ## 📸 Project Screenshots
+
+### 1. Login Page
+![Login Page](screenshots/login-page.png)
+
+### 2. Teacher Dashboard
+![Teacher Dashboard](screenshots/teacher-dashboard.png)
+
+### 3. Student Dashboard
+![Student Dashboard](screenshots/student-dashboard.png)
+
+### 4. Student Management
+![Student Management](screenshots/student-management.png)
+
 ## 👨‍💻 Developer
 
 **Hariharan Balachandran**
