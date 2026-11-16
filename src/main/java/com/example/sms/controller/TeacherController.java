@@ -1,7 +1,10 @@
+
 package com.example.sms.controller;
 
 import com.example.sms.model.Student;
+import com.example.sms.model.User;
 import com.example.sms.service.StudentService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +23,23 @@ public class TeacherController {
         this.service = service;
     }
 
-    @GetMapping("/dashboard")
+    private boolean isTeacher(HttpSession session) {
+        User user = (User) session.getAttribute("user");
 
+        return user != null &&
+                "TEACHER".equalsIgnoreCase(user.getRole());
+    }
+
+    @GetMapping("/dashboard")
     public String dashboard(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size,
-                            Model model) {
+                            Model model,
+                            HttpSession session) {
+
+        if (!isTeacher(session)) {
+            return "redirect:/?error=true";
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         Page<Student> studentPage = service.getPaginated(pageable);
 
@@ -35,36 +50,65 @@ public class TeacherController {
         return "teacher-dashboard";
     }
 
-
-
     @GetMapping("/add")
-    public String addForm(Model model) {
+    public String addForm(Model model, HttpSession session) {
+        if (!isTeacher(session)) {
+            return "redirect:/?error=true";
+        }
+
         model.addAttribute("student", new Student());
         return "add-student";
     }
 
     @PostMapping("/add")
-    public String save(@ModelAttribute Student student, RedirectAttributes redirectAttributes) {
+    public String save(@ModelAttribute Student student,
+                       RedirectAttributes redirectAttributes,
+                       HttpSession session) {
+
+        if (!isTeacher(session)) {
+            return "redirect:/?error=true";
+        }
+
         service.save(student);
-        redirectAttributes.addFlashAttribute("successMessage", "Student added successfully!");
+        redirectAttributes.addFlashAttribute(
+                "successMessage", "Student added successfully!");
+
         return "redirect:/teacher/dashboard";
     }
 
-
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable Long id, Model model) {
+    public String editForm(@PathVariable Long id,
+                           Model model,
+                           HttpSession session) {
+
+        if (!isTeacher(session)) {
+            return "redirect:/?error=true";
+        }
+
         model.addAttribute("student", service.getById(id));
         return "edit-student";
     }
 
     @PostMapping("/edit")
-    public String update(@ModelAttribute Student student) {
+    public String update(@ModelAttribute Student student,
+                         HttpSession session) {
+
+        if (!isTeacher(session)) {
+            return "redirect:/?error=true";
+        }
+
         service.save(student);
         return "redirect:/teacher/dashboard";
     }
 
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable Long id,
+                         HttpSession session) {
+
+        if (!isTeacher(session)) {
+            return "redirect:/?error=true";
+        }
+
         service.delete(id);
         return "redirect:/teacher/dashboard";
     }

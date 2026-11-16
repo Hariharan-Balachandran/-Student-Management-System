@@ -1,6 +1,8 @@
+
 package com.example.sms.controller;
 
 import com.example.sms.model.Student;
+import com.example.sms.model.User;
 import com.example.sms.service.StudentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
@@ -22,10 +24,23 @@ public class StudentController {
         this.service = service;
     }
 
+    private boolean isStudent(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+
+        return user != null &&
+                "STUDENT".equalsIgnoreCase(user.getRole());
+    }
+
     @GetMapping("/dashboard")
     public String dashboard(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size,
-                            Model model) {
+                            Model model,
+                            HttpSession session) {
+
+        if (!isStudent(session)) {
+            return "redirect:/?error=true";
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         Page<Student> studentPage = service.getPaginated(pageable);
 
